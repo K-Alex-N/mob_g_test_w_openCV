@@ -11,9 +11,7 @@ show_screen_img = True
 from PIL import Image, ImageTk
 import tkinter as tk
 
-
 ADB_PATH = r'C:\platform-tools\adb.exe'
-
 
 work_dir: str  # рабочая директория
 screenshot_path: str  # пусть к скриншоту
@@ -66,17 +64,19 @@ def load_target_images():  # загружаем целевые картинки
 def get_screenshot():  # получаем с устройства скриншот, возвращаем результат получения
     # global img_rgb
     printLog("get_screenshot started")
-    print(work_dir)
-    os.system(f"C:\\platform-tools\\adb.exe exec-out screencap -p > {work_dir}")
-    # try:
-    #     img_raw = subprocess.run(['C:\\platform-tools\\adb.exe', 'exec-out', 'screencap',
-    #                               '-p'], stdout=subprocess.PIPE).stdout  # получаем файл
-    #     img_arr = np.array(list(img_raw), 'uint8')  # декодируем в массив
-    #     # считываем изображение
-    #     img_rgb = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
-    #     return True  # возвращаем что получили удачно
-    # except:
-    #     return False  # возвращаем что получили битый
+    # print("work_dir")
+    # print(work_dir)
+    # print("sdd")
+    # os.system(r"adb exec-out screencap -p > C:\screen.png")
+    try:
+        img_raw = subprocess.run(['C:\\platform-tools\\adb.exe', 'exec-out', 'screencap',
+                                  '-p'], stdout=subprocess.PIPE).stdout  # получаем файл
+        img_arr = np.array(list(img_raw), 'uint8')  # декодируем в массив
+        # считываем изображение
+        img_rgb = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+        return True  # возвращаем что получили удачно
+    except:
+        return False  # возвращаем что получили битый
 
 
 def recognize_screenshot():  # распознаем на скриншоте все известные целевые изображения
@@ -286,7 +286,8 @@ def au_worker():  # работник, принимающий решение чт
 if __name__ == "__main__":
     printLog("Starting wr_bot")
 
-    if show_screen_img:
+    if False:
+    # if show_screen_img:
         printLog("Init display")
         window = tk.Tk()
 
@@ -335,22 +336,23 @@ if __name__ == "__main__":
     screenshot_path = f'{work_dir}\\temp\\screenshot.png'
     printLog(f'Running from: {work_dir}')
 
-    printLog("Loading target images...")
-    load_target_images()
-    printLog("Loading is complete.")
+    # printLog("Loading target images...")
+    # load_target_images()
+    # printLog("Loading is complete.")
 
-    ret = subprocess.run(['C:\\platform-tools\\adb.exe', 'devices'],
-                         capture_output=True, text=True).stdout
+    # ret = subprocess.run(['C:\\platform-tools\\adb.exe', 'devices'],
+    #                      capture_output=True, text=True).stdout
+    ret = subprocess.run(['adb', 'devices'], capture_output=True, text=True).stdout
     printLog(f'Devices: {ret}')
     get_screenshot()
     # recognize_screenshot()
     # while True:
     #     printLog("Loop")
     #     if get_screenshot():  # пытаемся получить скриншот, если получили
-            # if show_screen_img:
-            #     upd_img_on_window()
-            # recognize_screenshot()  # распознаем все что знаем
-            # if show_screen_img:
+    # if show_screen_img:
+    #     upd_img_on_window()
+    # recognize_screenshot()  # распознаем все что знаем
+    # if show_screen_img:
     #             upd_img_on_window()
     #         au_worker()  # принимаем действия
     #         if show_screen_img:
