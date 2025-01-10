@@ -1,5 +1,5 @@
 #  pip install ImageHash
-
+# почитать - https://pythonhow.com/what/imagehash-library-tutorial/
 import imagehash
 from PIL import Image
 
@@ -19,5 +19,5 @@ hash1 = imagehash.phash(img2)
 
 diff = hash0 - hash1
 print(diff)
-if diff < 0.0000001:
-    print("Изображения похожи")
+if diff >= 1:
+    print("Изображения отличаются")
