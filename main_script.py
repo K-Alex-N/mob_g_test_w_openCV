@@ -21,3 +21,5 @@ img1 = "comparison/5353018101685414245.jpg"
 img2 = "comparison/5353018101685414245 - small diff.jpg"
 
 is_images_different(img1, img2)
+
+# проверить что язык английский, если нет то скриншот и выставить английский язык
