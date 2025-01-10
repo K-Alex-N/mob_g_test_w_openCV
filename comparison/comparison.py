@@ -24,5 +24,7 @@ def find_differences(img1, img2):
 # Пример использования
 img1_path = '5353018101685414245.jpg'
 # img2_path = '5353018101685414245---2.jpg'
-img2_path = '5353018101685414245 - Diff.jpg'
+# img2_path = '5353018101685414245 - Diff.jpg'
+img2_path = '5353018101685414245 - small diff.jpg'
+# img2_path = '5353018101685414245 - big diff.jpg'
 find_differences(img1_path, img2_path)
