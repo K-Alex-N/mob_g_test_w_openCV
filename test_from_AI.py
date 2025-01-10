@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 
 # Загружаем исходное изображение и шаблон
-img = cv2.imread('starry_night.png', 0)  # Загружаем в оттенках серого
-template = cv2.imread('target.png', 0)  # Шаблон, который будем искать
+img = cv2.imread('my_images/starry_night.png', 0)  # Загружаем в оттенках серого
+template = cv2.imread('my_images/target.png', 0)  # Шаблон, который будем искать
 
 # Метод сопоставления шаблонов
 w, h = template.shape[::-1]

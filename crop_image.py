@@ -31,7 +31,7 @@ for row_img in ('123.png', '5353018101685414307.jpg', 'starry_night2.png'):
     start_time = time.time()
     img = cv2.imread(row_img)
     cropped_img = crop_image(img, 100, 50, 200, 150)  # Обрезаем область со стартовыми координатами (100, 50) и размером 200x150 пикселей
-    cv2.imwrite('1.png', cropped_img)
+    cv2.imwrite('my_images/1.png', cropped_img)
     print(time.time() - start_time)
 
 

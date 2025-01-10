@@ -26,7 +26,7 @@ is_images_different(img1, img2)
 
 # проверить что язык английский, если нет то скриншот и выставить английский язык
 
-image_path = 'Screenshot2.jpg'
+image_path = 'my_images/Screenshot2.jpg'
 width, height = get_image_resolution(image_path)
 
 class TestMenuLives:

@@ -2,10 +2,10 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv.imread('starry_night.png', cv.IMREAD_GRAYSCALE)
+img = cv.imread('my_images/starry_night.png', cv.IMREAD_GRAYSCALE)
 assert img is not None, "file could not be read, check with os.path.exists()"
 img2 = img.copy()
-template = cv.imread('target.png', cv.IMREAD_GRAYSCALE)
+template = cv.imread('my_images/target.png', cv.IMREAD_GRAYSCALE)
 assert template is not None, "file could not be read, check with os.path.exists()"
 w, h = template.shape[::-1]
 

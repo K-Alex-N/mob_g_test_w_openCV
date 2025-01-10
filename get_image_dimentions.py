@@ -23,7 +23,7 @@ def get_image_resolution(image_path):
 
 
 # Пример использования
-image_path = 'Screenshot2.jpg'
+image_path = 'my_images/Screenshot2.jpg'
 start = time.time()
 width, height = get_image_resolution(image_path)
 print(time.time() - start)

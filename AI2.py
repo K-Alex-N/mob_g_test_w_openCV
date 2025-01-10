@@ -32,8 +32,8 @@ def find_template(image_path, template_path):
         return None
 
 # Пример использования
-image_path = 'starry_night.png'
-template_path = 'target2.png'
+image_path = 'my_images/starry_night.png'
+template_path = 'my_images/target2.png'
 result = find_template(image_path, template_path)
 
 if result:
