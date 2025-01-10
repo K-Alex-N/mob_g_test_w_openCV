@@ -1,0 +1,15 @@
+# [x1, y1, x2, y2]
+# x1: int in % (percentage)
+# y1: int in % (percentage)
+# x2: int in % (percentage)
+# y2: int in % (percentage)
+# top-left coord = [width * x1, height * y1]
+# bottom-right coord = [width * x2, height * y2]
+# so x1 > x2, y1 > y2    ПРО Х - ОК а вот про Y возможно все наоборот!!!!!!!!!!!!!!!!!
+
+menu:
+  lives:
+    title: localhost
+    title: [10, 10, 10, 10]
+
+
