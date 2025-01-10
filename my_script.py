@@ -7,28 +7,20 @@ import numpy as np
 
 show_screen_img = True
 
-# if show_screen_img:
-from PIL import Image, ImageTk
-import tkinter as tk
-
-ADB_PATH = r'C:\platform-tools\adb.exe'
+if show_screen_img:
+    from PIL import Image, ImageTk
+    import tkinter as tk
 
 work_dir: str  # рабочая директория
 screenshot_path: str  # пусть к скриншоту
 img_rgb: np.ndarray  # скриншот
-target_icons: np.ndarray = ['ad_enable', 'ruletka', 'ruletka_attemp', 'ruletka_end', 'get', 'ok', 'black_market',
-                            'discount_special',
-                            'box_open', 'main_menu', 'main_menu_exit', 'discount_banner0', 'discount_banner1',
-                            'discount_banner2',
-                            'discount_banner3', 'discount_banner3_exit', 'back', 'bronze_box', 'special_icon',
-                            'ruletka_icon', 's1',
+target_icons: np.ndarray = ['ad_enable', 'ruletka', 'ruletka_attemp', 'ruletka_end', 'get', 'ok', 'black_market', 'discount_special',
+                            'box_open', 'main_menu', 'main_menu_exit', 'discount_banner0', 'discount_banner1', 'discount_banner2',
+                            'discount_banner3', 'discount_banner3_exit', 'back', 'bronze_box', 'special_icon', 'ruletka_icon', 's1',
                             's2', 's3', 's4', 'gp', 'ch']
-target_exit: np.ndarray = ['ad_exit_next0', 'ad_exit_next1', 'ad_exit_next2', 'ad_exit_next3', 'ad_exit_next4',
-                           'ad_exit_next5',
-                           'ad_exit0', 'ad_exit1', 'ad_exit1_mask', 'ad_exit2', 'ad_exit3', 'ad_exit4', 'ad_exit5',
-                           'ad_exit6',
-                           'ad_exit7', 'ad_exit7_mask', 'ad_exit8', 'ad_exit9', 'ad_exit9_mask', 'ad_exit10',
-                           'ad_exit11']
+target_exit: np.ndarray = ['ad_exit_next0', 'ad_exit_next1', 'ad_exit_next2', 'ad_exit_next3', 'ad_exit_next4', 'ad_exit_next5',
+                           'ad_exit0', 'ad_exit1', 'ad_exit1_mask', 'ad_exit2', 'ad_exit3', 'ad_exit4', 'ad_exit5', 'ad_exit6',
+                           'ad_exit7', 'ad_exit7_mask', 'ad_exit8', 'ad_exit9', 'ad_exit9_mask', 'ad_exit10', 'ad_exit11']
 target_images: np.ndarray = np.concatenate([target_icons, target_exit])
 # размеры квадрата справа для поиска кнопки выхода
 target_exit_cut: np.ndarray = [700, 300]
@@ -55,22 +47,18 @@ def load_target_images():  # загружаем целевые картинки
             target_images_rgb[img_t] = cv2.imread(
                 f"{work_dir}\\images\\{img_t}.png")  # загружаем в память
             _, w, h = target_images_rgb[img_t].shape[::-1]  # получаем размеры
-            target_images_psize[img_t] = [w // 2, h // 2]  # записываем половинные
+            target_images_psize[img_t] = [w//2, h//2]  # записываем половинные
     except:
         printLog("Err get img")
         sys.exit()  # завершаем программу
 
 
 def get_screenshot():  # получаем с устройства скриншот, возвращаем результат получения
-    # global img_rgb
+    global img_rgb
     printLog("get_screenshot started")
-    # print("work_dir")
-    # print(work_dir)
-    # print("sdd")
-    # os.system(r"adb exec-out screencap -p > C:\screen.png")
     try:
         img_raw = subprocess.run(['C:\\platform-tools\\adb.exe', 'exec-out', 'screencap',
-                                  '-p'], stdout=subprocess.PIPE).stdout  # получаем файл
+                                 '-p'], stdout=subprocess.PIPE).stdout  # получаем файл
         img_arr = np.array(list(img_raw), 'uint8')  # декодируем в массив
         # считываем изображение
         img_rgb = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
@@ -94,9 +82,9 @@ def recognize_screenshot():  # распознаем на скриншоте вс
             img_s = img_rgb
         # ищем
         rec_metod = cv2.TM_SQDIFF_NORMED if img_t == 'ad_enable' else cv2.TM_CCOEFF_NORMED
-        if img_t + '_mask' in target_images:
+        if img_t+'_mask' in target_images:
             res = cv2.matchTemplate(
-                img_s, target_images_rgb[img_t], rec_metod, target_images_rgb[img_t + '_mask'])
+                img_s, target_images_rgb[img_t], rec_metod, target_images_rgb[img_t+'_mask'])
         else:
             res = cv2.matchTemplate(
                 img_s, target_images_rgb[img_t], rec_metod)
@@ -104,31 +92,28 @@ def recognize_screenshot():  # распознаем на скриншоте вс
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
         t_loc = min_loc if rec_metod == cv2.TM_SQDIFF_NORMED else max_loc
         # получаем координаты центра
-        cx = t_loc[0] + target_images_psize[img_t][0]
-        cy = t_loc[1] + target_images_psize[img_t][1]
+        cx = t_loc[0]+target_images_psize[img_t][0]
+        cy = t_loc[1]+target_images_psize[img_t][1]
         # если искали в области, то корректируем координаты
         if img_cut_flag:
             _, w, _ = img_rgb.shape
-            cx += w - target_exit_cut[0]
+            cx += w-target_exit_cut[0]
         # записываем результаты
         target_recognized[img_t] = [
-            True if ((max_val > threshold) if (rec_metod == cv2.TM_CCOEFF_NORMED) else (min_val < 0.003)) else False,
-            cx, cy]
+            True if ((max_val > threshold) if (rec_metod == cv2.TM_CCOEFF_NORMED) else (min_val < 0.003)) else False, cx, cy]
         # for debug
         # if img_t == 'ad_exit7':
         #    print(f'min_val = {min_val}, max_val = {max_val}')
         # проверяем активна ли кнопка по цвету пикселя
-        if img_t == 'ad_enable' and target_recognized[img_t][0] and sum(img_rgb[cy][cx + 5]) < 700 and sum(
-                img_rgb[cy][cx + 10]) < 500:
+        if img_t == 'ad_enable' and target_recognized[img_t][0] and sum(img_rgb[cy][cx+5]) < 700 and sum(img_rgb[cy][cx+10]) < 500:
             # если не активна, то исправляем найденное
             target_recognized[img_t][0] = False
             printLog(f"Img: ad_enable - disabled, location: x:{cx}, y:{cy}")
-        elif img_t == 'ad_exit2' and target_recognized[img_t][0] and img_rgb[cy + 17][cx - 18][0] < 150 and \
-                img_rgb[cy + 17][cx - 18][1] > 150 and img_rgb[cy + 17][cx - 18][2] > 200:
+        elif img_t == 'ad_exit2' and target_recognized[img_t][0] and img_rgb[cy+17][cx-18][0] < 150 and img_rgb[cy+17][cx-18][1] > 150 and img_rgb[cy+17][cx-18][2] > 200:
             # если не верная, то исправляем найденное
             target_recognized[img_t][0] = False
             print(f"Img: ad_exit2 - disabled, location: x:{cx}, y:{cy}")
-        elif img_t == 'get' and target_recognized[img_t][0] and sum(img_rgb[cy][cx - 1]) < 250:
+        elif img_t == 'get' and target_recognized[img_t][0] and sum(img_rgb[cy][cx-1]) < 250:
             target_recognized[img_t][0] = False
             printLog(f"Img: get - disabled, location: x:{cx}, y:{cy}")
         # печатаем в лог все найденные
@@ -137,10 +122,10 @@ def recognize_screenshot():  # распознаем на скриншоте вс
             # если включено отображение на экране, то выделяем на картинке
             if show_screen_img:
                 # draw the bounding box on the image
-                cv2.rectangle(img_rgb, (t_loc[0], t_loc[1]), (t_loc[0] + target_images_psize[img_t]
-                [0] * 2, t_loc[1] + target_images_psize[img_t][1] * 2), (0, 255, 255), 3)
-                cv2.putText(img_rgb, img_t, (t_loc[0] + target_images_psize[img_t]
-                [0] * 2, t_loc[1] + target_images_psize[img_t][1] * 2), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 8)
+                cv2.rectangle(img_rgb, (t_loc[0], t_loc[1]), (t_loc[0]+target_images_psize[img_t]
+                              [0]*2, t_loc[1]+target_images_psize[img_t][1]*2), (0, 255, 255), 3)
+                cv2.putText(img_rgb, img_t, (t_loc[0]+target_images_psize[img_t]
+                                             [0]*2, t_loc[1]+target_images_psize[img_t][1]*2), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 8)
 
     printLog("recognize_screenshot is complete.")
 
@@ -197,8 +182,7 @@ def au_worker():  # работник, принимающий решение чт
                    target_recognized['discount_banner3_exit'][2])  # закрываем
         ad_mode = False
     # первый тип акционного банера (при загрузке), закрываем
-    elif (target_recognized['discount_banner0'][0] or target_recognized['discount_banner1'][0]) and \
-            target_recognized['main_menu_exit'][0]:
+    elif (target_recognized['discount_banner0'][0] or target_recognized['discount_banner1'][0]) and target_recognized['main_menu_exit'][0]:
         tap_screen(target_recognized['main_menu_exit'][1],
                    target_recognized['main_menu_exit'][2])  # закрываем
         ad_mode = False
@@ -280,21 +264,18 @@ def au_worker():  # работник, принимающий решение чт
         if ad_mode and (not tap_exit_ad) and ((time.time() - start_time_ad) > timeout_ad):
             printLog("timeout_ad")
             height, width, _ = img_rgb.shape
-            tap_screen(width - 50, 50)  # жмем в ту область, где он должен быть
+            tap_screen(width-50, 50)  # жмем в ту область, где он должен быть
 
 
 if __name__ == "__main__":
     printLog("Starting wr_bot")
 
-    if False:
-    # if show_screen_img:
+    if show_screen_img:
         printLog("Init display")
         window = tk.Tk()
 
-
         def on_closing():
             destructor()
-
 
         window.protocol("WM_DELETE_WINDOW", on_closing)
         window.wm_title("Android screen")
@@ -311,22 +292,19 @@ if __name__ == "__main__":
         lmain = tk.Label(imageFrame)
         lmain.grid(row=0, column=0)
 
-
         def destructor():
             cv2.destroyAllWindows()  # it is not mandatory in this application
             sys.exit()
-
 
         def show_frame():
             global img_rgb
             cap_img = Image.fromarray(img_rgb)
             ciw, cih = cap_img.size
-            cap_img_arr = np.array(cap_img.resize((ciw // 2, cih // 2), Image.ANTIALIAS))
+            cap_img_arr = np.array(cap_img.resize((ciw//2, cih//2), Image.ANTIALIAS))
             cv2image = cv2.cvtColor(cap_img_arr, cv2.COLOR_BGR2RGBA)
             imgtk = ImageTk.PhotoImage(image=Image.fromarray(cv2image))
             lmain.imgtk = imgtk
             lmain.configure(image=imgtk)
-
 
         def upd_img_on_window():
             show_frame()  # Display
@@ -336,28 +314,26 @@ if __name__ == "__main__":
     screenshot_path = f'{work_dir}\\temp\\screenshot.png'
     printLog(f'Running from: {work_dir}')
 
-    # printLog("Loading target images...")
-    # load_target_images()
-    # printLog("Loading is complete.")
+    printLog("Loading target images...")
+    load_target_images()
+    printLog("Loading is complete.")
 
-    # ret = subprocess.run(['C:\\platform-tools\\adb.exe', 'devices'],
-    #                      capture_output=True, text=True).stdout
-    ret = subprocess.run(['adb', 'devices'], capture_output=True, text=True).stdout
+    ret = subprocess.run(['C:\\platform-tools\\adb.exe', 'devices'],
+                         capture_output=True, text=True).stdout
     printLog(f'Devices: {ret}')
-    get_screenshot()
-    # recognize_screenshot()
-    # while True:
-    #     printLog("Loop")
-    #     if get_screenshot():  # пытаемся получить скриншот, если получили
-    # if show_screen_img:
-    #     upd_img_on_window()
-    # recognize_screenshot()  # распознаем все что знаем
-    # if show_screen_img:
-    #             upd_img_on_window()
-    #         au_worker()  # принимаем действия
-    #         if show_screen_img:
-    #             upd_img_on_window()
-    #         # после выполнения действий даем время на анимацию (загрузку активити)
-    #     time.sleep(1.5)
-    #     printLog("End loop")
-    # printLog("Exit.")
+
+    while (1):
+        printLog("Loop")
+        if get_screenshot():  # пытаемся получить скриншот, если получили
+            if show_screen_img:
+                upd_img_on_window()
+            recognize_screenshot()  # распознаем все что знаем
+            if show_screen_img:
+                upd_img_on_window()
+            au_worker()  # принимаем действия
+            if show_screen_img:
+                upd_img_on_window()
+            # после выполнения действий даем время на анимацию (загрузку активити)
+        time.sleep(1.5)
+        printLog("End loop")
+    printLog("Exit.")
