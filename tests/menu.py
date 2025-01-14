@@ -12,7 +12,6 @@ from tests.base import compare_images_with_mask, WORK_DIR
 # нажать следующее меню
 
 
-
 def test_main_menu_screenshot():
     # target
     img1_path = os.path.join(WORK_DIR, r'images\menu\main_menu\11.JPG')
@@ -33,26 +32,36 @@ def test_main_menu_screenshot():
 
 def click_on_menu_shop():
     ...
+    # subfunction tap()
     # click with ADB in coord
+
 
 def click_on_menu_lives():
     pass
 
+
+def tap_on_menu_settings():
+    pass
+
+
 def exit_from_menu():
     pass
 
+
 def compare_menu_shop_screenshot():
     pass
+    # через разные меню зайти и сравнить скриншоты
+    # click_on_menu_shop1()
+    # click_on_menu_shop2()
     # compare_images_with_mask():
+
 
 def compare_menu_lives_screenshot():
     pass
     # compare_images_with_mask():
 
 
-
-if __name__ == "__main__":
-
+def test_startup():
     # вынести в фикстуру или функцию startup
     time.sleep(5)
     for _ in range(5):
@@ -61,17 +70,21 @@ if __name__ == "__main__":
 
     # test_main_menu_screenshot()
 
+class TestMenu:
+    def test_menu_screenshots(self):
+
+        click_on_menu_shop()
+        compare_menu_shop_screenshot()
+        exit_from_menu()
+
+        click_on_menu_lives()
+        compare_menu_lives_screenshot()
+        exit_from_menu()
+
+        tap_on_menu_settings()
+        # menu levels
 
 
 
-def test_menu_by_screenshots():
-
-
-    click_on_menu_shop()
-    compare_menu_shop_screenshot()
-    exit_from_menu()
-
-    click_on_menu_lives()
-    compare_menu_lives_screenshot()
-    exit_from_menu()
-
+    def test_text_in_menu(self):
+        pass
