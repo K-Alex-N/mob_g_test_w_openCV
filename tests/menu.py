@@ -71,6 +71,7 @@ def test_startup():
     # test_main_menu_screenshot()
 
 class TestMenu:
+
     def test_menu_screenshots(self):
 
         click_on_menu_shop()
